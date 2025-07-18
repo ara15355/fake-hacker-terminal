@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🔥 Ultimate Hacker Terminal + Sound & Interaction</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 20px;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #terminal {
+      white-space: pre-wrap;
+      font-size: 1.2em;
+      line-height: 1.4em;
+      max-width: 800px;
+      margin-top: 20px;
+      user-select: none;
+      flex-grow: 1;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #0f0;
+      padding: 15px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      width: 90vw;
+      max-height: 70vh;
+      position: relative;
+    }
+    .cursor {
+      display: inline-block;
+      background: #0f0;
+      width: 10px;
+      animation: blink 1s steps(2, start) infinite;
+      vertical-align: bottom;
+      margin-left: 2px;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    #menu {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .menu-btn {
+      background: transparent;
+      border: 2px solid #0f0;
+      color: #0f0;
+      padding: 10px 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+    }
+    .menu-btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+    #passwordPrompt {
+      margin-top: 10px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    #passwordInput {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1em;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 2px solid #0f0;
+      background: black;
+      color: #0f0;
+      width: 250px;
+      outline: none;
+      user-select: text;
+    }
+    #passwordSubmit {
+      cursor: pointer;
+      padding: 8px 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1em;
+      background: transparent;
+      border: 2px solid #0f0;
+      color: #0f0;
+      border-radius: 5px;
+      user-select: none;
+      transition: background 0.3s, color 0.3s;
+    }
+    #passwordSubmit:hover {
+      background: #0f0;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="color:#0f0; font-family: 'Share Tech Mono', monospace; margin:0;">🚀 Ultimate Hacker Terminal</h1>
+  
+  <div id="terminal"></div>
+  
+  <div id="menu">
+    <button class="menu-btn" data-script="basic">Basic Hack</button>
+    <button class="menu-btn" data-script="ransomware">Ransomware Attack</button>
+    <button class="menu-btn" data-script="ddos">DDoS Attack</button>
+    <button class="menu-btn" data-script="rootkit">Rootkit Install</button>
+  </div>
+  
+  <div id="passwordPrompt">
+    <p>Enter password to unlock hack:</p>
+    <input id="passwordInput" type="password" autocomplete="off" />
+    <button id="passwordSubmit">Submit</button>
+  </div>
+
+<script>
+  // Sound effects
+  const sounds = {
+    typing: new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'),
+    success: new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'),
+    error: new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg')
+  };
+
+  sounds.typing.volume = 0.05;
+  sounds.success.volume = 0.15;
+  sounds.error.volume = 0.2;
+
+  // Fake hacking scripts
+  const scripts = {
+    basic: [
+      "Initializing hack engine...",
+      "Connecting to 192.168.0.1...",
+      "Bypassing firewall...",
+      "Accessing secure server...",
+      "Downloading confidential files...",
+      "Decrypting password hashes...",
+      "Hack complete!"
+    ],
+    ransomware: [
+      "Launching ransomware attack...",
+      "Encrypting files...",
+      "Demanding bitcoin ransom...",
+      "Monitoring victim network...",
+      "Hiding tracks...",
+      "Ransomware deployed successfully!"
+    ],
+    ddos: [
+      "Preparing DDoS attack...",
+      "Flooding server with requests...",
+      "Amplifying attack vectors...",
+      "Server under heavy load...",
+      "Attack complete, server down!"
+    ],
+    rootkit: [
+      "Installing rootkit...",
+      "Escalating privileges...",
+      "Hiding presence...",
+      "Maintaining backdoor access...",
+      "Rootkit installed successfully!"
+    ]
+  };
+
+  const terminal = document.getElementById('terminal');
+  const menu = document.getElementById('menu');
+  const passwordPrompt = document.getElementById('passwordPrompt');
+  const passwordInput = document.getElementById('passwordInput');
+  const passwordSubmit = document.getElementById('passwordSubmit');
+
+  let cursor, currentLine = 0, currentChar = 0, isTyping = false;
+  let currentScript = [];
+  const TYPE_SPEED = 35;
+  const PASSWORD = "COOLEARAM"
+  "; // Set your fake password here"
+
+  function playSound(name) {
+    if (sounds[name]) {
+      sounds[name].currentTime = 0;
+      sounds[name].play();
+    }
+  }
+
+  function typeLine(line, callback) {
+    isTyping = true;
+    if (currentChar < line.length) {
+      terminal.innerHTML += line.charAt(currentChar);
+      playSound('typing');
+      currentChar++;
+      setTimeout(() => typeLine(line, callback), TYPE_SPEED);
+    } else {
+      terminal.innerHTML += "\n";
+      currentChar = 0;
+      isTyping = false;
+      callback();
+    }
+  }
+
+  function runScript() {
+    if (currentLine < currentScript.length) {
+      typeLine(currentScript[currentLine], () => {
+        currentLine++;
+        setTimeout(runScript, 600 + Math.random() * 600);
+      });
+    } else {
+      playSound('success');
+      terminal.innerHTML += "\n✅ Hack simulation finished. Stay stealthy! 👾\n\n";
+      menu.style.display = 'flex';
+      passwordPrompt.style.display = 'none';
+      resetCursor();
+    }
+  }
+
+  function resetCursor() {
+    if (!cursor) {
+      cursor = document.createElement('span');
+      cursor.classList.add('cursor');
+      terminal.appendChild(cursor);
+    }
+  }
+
+  function clearTerminal() {
+    terminal.innerHTML = '';
+    currentLine = 0;
+    currentChar = 0;
+  }
+
+  function promptPassword() {
+    menu.style.display = 'none';
+    passwordPrompt.style.display = 'flex';
+    passwordInput.value = '';
+    passwordInput.focus();
+    clearTerminal();
+    terminal.innerHTML = '🔐 Enter password to unlock hack:\n\n';
+    resetCursor();
+  }
+
+  menu.addEventListener('click', e => {
+    if (e.target.classList.contains('menu-btn')) {
+      // Show password prompt before running script
+      promptPassword();
+      currentScript = scripts[e.target.dataset.script];
+    }
+  });
+
+  passwordSubmit.addEventListener('click', () => {
+    if (passwordInput.value === PASSWORD) {
+      playSound('success');
+      clearTerminal();
+      runScript();
+    } else {
+      playSound('error');
+      terminal.innerHTML += "❌ Incorrect password. Try again.\n";
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+  });
+
+  passwordInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') passwordSubmit.click();
+  });
+
+  // Initial setup
+  cursor = document.createElement('span');
+  cursor.classList.add('cursor');
+  terminal.appendChild(cursor);
+</script>
+
+</body>
+</html>
